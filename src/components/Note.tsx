@@ -26,6 +26,10 @@ export default function Note() {
   };
 
   const handleCreateOrUpdate = () => {
+    if (!newNote.title || !newNote.content) {
+      alert("Title and Content are required");
+      return;
+    }
     const formatted = `${newNote.title}: ${newNote.content}`;
 
     if (editingIndex !== null) {
@@ -41,45 +45,76 @@ export default function Note() {
   };
 
   return (
-    <div>
-      <h2>{userContext?.user?.username}</h2>
+    <div className="max-w-xl mx-auto p-6 space-y-6">
+      <h2 className="text-2xl font-semibold text-gray-800">
+        {userContext?.user?.username}
+      </h2>
 
+      {/* Title input */}
       <input
         type="text"
         placeholder="Title"
         value={newNote.title}
         onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
 
+      {/* Content textarea */}
       <textarea
         placeholder="Content"
         value={newNote.content}
         onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+        className="w-full p-3 h-32 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
 
-      <button onClick={handleCreateOrUpdate}>
+      {/* Add / Update button */}
+      <button
+        onClick={handleCreateOrUpdate}
+        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold"
+      >
         {editingIndex !== null ? "Update Note" : "Add Note"}
       </button>
 
-      <div>
-        {notes.map((note, index) => (
-          <div key={index} className="note">
-            <p>{note}</p>
+      {/* Notes list */}
+      <div className="space-y-4">
+        {notes.map((note, index) => {
+          const [title, ...contentParts] = note.split(": ");
+          const content = contentParts.join(": ");
 
-            <button
-              onClick={() => {
-                setEditingIndex(index);
-
-                const [title, ...contentParts] = note.split(": ");
-                const content = contentParts.join(": ");
-
-                setNewNote({ title, content });
-              }}
+          return (
+            <div
+              key={index}
+              className="p-4 border border-gray-300 rounded-lg shadow-sm bg-white"
             >
-              Edit
-            </button>
-          </div>
-        ))}
+              <p className="text-gray-800 whitespace-pre-line">
+                <span className="font-semibold">{title}</span>: {content}
+              </p>
+
+              <div className="mt-3 flex items-center gap-3">
+                {/* Edit */}
+                <button
+                  onClick={() => {
+                    setEditingIndex(index);
+                    setNewNote({ title, content });
+                  }}
+                  className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md"
+                >
+                  Edit
+                </button>
+
+                {/* Cancel (only for the currently editing note) */}
+                {editingIndex === index && (
+                  <button
+                    onClick={() => setEditingIndex(null)}
+                    className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

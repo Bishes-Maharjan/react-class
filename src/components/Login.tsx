@@ -19,6 +19,10 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if(!form.username || !form.password || !form.email) {
+      toast.error("All fields are required");
+      return;
+    }
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const user = users.find(
       (u: LoginForm) =>

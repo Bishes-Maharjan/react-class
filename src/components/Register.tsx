@@ -41,6 +41,10 @@ export default function Register() {
           onClick={(e) => {
             e.preventDefault();
             if (register) {
+              if (!username || !password || !email) {
+                toast.error("All fields are required");
+                return;
+              }
               const res = register({
                 username: username,
                 password: password,
